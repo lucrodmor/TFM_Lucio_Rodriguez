@@ -91,7 +91,7 @@ TCGAbiolinks::GDCdownload(query)
 ##########################
 clinical_PROD <-TCGAbiolinks::GDCprepare_clinic(query, clinical.info = "patient")
 ######################################################
-saveRDS(clinical_COAD, file = "clinical_COAD.RData")
+saveRDS(clinical_COAD, file = "clinical_BRCA.RData")
 saveRDS(clinical_PROD, file = "clinical_LuAD.RData")
 #####################################################3
 
