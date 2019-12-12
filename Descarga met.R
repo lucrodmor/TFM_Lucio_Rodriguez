@@ -98,6 +98,18 @@ rownames(GEcancer)<-sapply(strsplit(rownames(GEcancer), split = ';'), function(x
 GEcancer<-as.data.frame(GEcancer)
 GEcancer<-as.matrix(GEcancer)
 METnormal<-as.data.frame(METnormal)
+
+
+
+genes<-rownames(METnormal)
+METnormal<-apply(METnormal,2,as.numeric)
+rownames(METnormal)<-genes
+
+genes<-rownames(METcancer)
+METnormal<-apply(METcancer,2,as.numeric)
+rownames(METcancer)<-genes
+
+
 METnormal<-as.matrix(METnormal)
 METcancer<-as.data.frame(METcancer)
 METcancer<-as.matrix(METcancer)
@@ -119,20 +131,29 @@ GEcancer<-GEcancer[idx,]
 ####################
 ######EJEMPLO##########
 library(MethylMix)
+saveRDS(METnormal, file = "METnormal.rds")
+saveRDS(METcancer,file = "METcancer.rds")
+saveRDS(GEcancer, file = "GEcancer.rds")
+METcancer<-as.matrix(METcancer)
+METnormal<-METnormal[1:5,]
+GEcancer<-GEcancer[1:5,]
 METnormal[,1:4]
 head(METcancer)
 head(GEcancer)
-remove(MethylMix, Samples,Samples1, Samples2, Samples_Normal, Samples_Tumor)
+match(colnames(METcancer), colnames(GEcancer))
+METcancer<-apply(METcancer,2, as.numeric)
+class(METcancer)
 
-MethylMixResults<-MethylMix(METcancer, GEcancer, METnormal, filter = TRUE, NoNormalMode = FALSE)
+MethylMixResults<-MethylMix(METcancer[1:997,], GEcancer[1:997,], METnormal[1:997,], filter = TRUE, NoNormalMode = FALSE, listOfGenes = rownames(METcancer), OutputRoot = "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2")
 
-MethylMixResults$MethylationDrivers
-plots<-MethylMix_PlotModel("MGMT", MethylMixResults, METcancer)
+Drivers<-MethylMixResults$MethylationDrivers
+Drivers
+plots<-MethylMix_PlotModel("PAX8", MethylMixResults, METcancer)
 plots$CorrelationPlot
 plots$MixtureModelPlot
 plots$MixtureModelPlot
 MethylMixResults$Classifications
 MethylMixResults$MethylationStates
 ############################################################################
-which(duplicated(rownames(METnormal)))      
+
       
