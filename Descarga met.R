@@ -154,6 +154,52 @@ plots$MixtureModelPlot
 plots$MixtureModelPlot
 MethylMixResults$Classifications
 MethylMixResults$MethylationStates
-############################################################################
+# Plot MGMT also with its normal methylation variation
+plots <- MethylMix_PlotModel("PAX8", MethylMixResults, METcancer, METnormal = METnormal)
+plots$MixtureModelPlot
+# Also plot the inverse correlation with gene expression (creates two
+# separate plots)
+plots <- MethylMix_PlotModel("TAP1", MethylMixResults, METcancer, GEcancer, 
+                             METnormal)
+plots$MixtureModelPlot
+plots$CorrelationPlot
+# Plot all functional and differential genes
+gene<-Drivers
+for (gene in MethylMixResults$MethylationDrivers) {
+  MethylMix_PlotModel(gene, MethylMixResults, METcancer, METnormal = METnormal)
+}
 
-      
+############################################################################
+write.xlsx2(Drivers, file = "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2/Drivers_breast.xlsx")
+library(xlsx)      
+############################################################################
+library(ConsensusClusterPlus)
+MethylMixResults<- MethylMix(METcancer, GEcancer, METnormal)
+
+ComplexHeatmap::Heatmap(Metilation)
+Metilation<-cbind(as.data.frame(METcancer), as.data.frame(METnormal))
+
+Samplestype<-c(1:216)
+Samplestype[1:194]<-"Tumor"
+Samplestype[195:216]<-"Normal"
+library(gplots)
+DMvalues<- MethylMixResults$MethylationStates
+cons_cluster<- ConsensusClusterPlus(d=DMvalues, maxK=10, reps=1000, pItem=0.8, distance='euclidean', clusterAlg="km")
+heatmap.2(as.matrix(DMvalues),scale='row',col=bluered(149),trace='none',
+          main = "DM Values Centered CpG sites",margins = c(9, 22),density.inf="none",symkey=TRUE)
+BiocManager::install("pvcluster")
+
+pvclust(as.matrix(Metilation), method.hclust="average",
+        method.dist="correlation", use.cor="pairwise.complete.obs",
+        nboot=1000, parallel=FALSE, r=seq(.5,1.4,by=.1),
+        store=FALSE, weight=FALSE, iseed=NULL, quiet=FALSE)
+
+library(pvclust)
+Boxplot<-as.data.frame(t(DMvalues))
+boxplot(Boxplot, las =2, col = rainbow(39), main = "Predictive Genes DM Values")
+
+
+idx1<-match( Drivers, rownames(Metilation))
+Metilation<-Metilation[idx1,]
+BetaValues<-Metilation
+boxplot(t(BetaValues), las = 2, col = rainbow(39), main = "Predictive Genes Beta Values")
