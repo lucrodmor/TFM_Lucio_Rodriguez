@@ -185,7 +185,7 @@ Samplestype[195:216]<-"Normal"
 library(gplots)
 DMvalues<- MethylMixResults$MethylationStates
 cons_cluster<- ConsensusClusterPlus(d=DMvalues, maxK=10, reps=1000, pItem=0.8, distance='euclidean', clusterAlg="km")
-heatmap.2(as.matrix(DMvalues),scale='row',col=bluered(149),trace='none',
+heatmap.2(as.matrix(METcancer),scale='row',col=bluered(149),trace='none',
           main = "DM Values Centered CpG sites",margins = c(9, 22),density.inf="none",symkey=TRUE)
 BiocManager::install("pvcluster")
 
@@ -203,3 +203,45 @@ idx1<-match( Drivers, rownames(Metilation))
 Metilation<-Metilation[idx1,]
 BetaValues<-Metilation
 boxplot(t(BetaValues), las = 2, col = rainbow(39), main = "Predictive Genes Beta Values")
+
+
+#############################################################################################
+#Análisis expresión ARN y CNVmut
+library(readr)
+cna <- read_delim("cna.txt", "\t", escape_double = FALSE, 
+                       trim_ws = TRUE)
+rownames<-cna$SAMPLE_ID
+cna<-as.data.frame(t(cna))
+colnames(cna)<-rownames
+cna<-cna[-1,]
+cna<-cna[-1,]
+colnames(cna)<-substr(colnames(cna),1,12)
+idx<-match(colnames(GEcancer),colnames(cna))
+cna<-cna[,idx]
+cna<-as.numeric(cna)
+cna<-apply(cna, 2, as.numeric)
+cna<-replace(cna, cna==2, "Ampl")
+cna<-replace(cna, cna==1 | cna==0 | cna==-1 | cna==-2, "No_ampl")
+rownames(cna)<-Drivers
+cna<-as.data.frame(t(cna))
+GEcancer<-as.data.frame(t(GEcancer))
+
+idx<-match(colnames(cna), colnames(GEcancer))
+GEcancer<-GEcancer[,idx]
+#########################################################################################
+mut_exp<-merge(GEcancer, cna, by = "row.names")
+rownames(mut_exp)<-mut_exp$Row.names
+mut_exp<-mut_exp[,-1]
+library(ggplot2)
+mut_exp<-as.data.frame(t(mut_exp))
+
+########################################
+mut_exp<-mut_exp[order(as.matrix(mut_exp$PAX8.x), decreasing = TRUE),]
+col<-which(mut_exp$PAX8.y=="Ampl")
+mut_exp$col<-"blue"
+mut_exp$col[c(col)]<-"red"
+rownames<-rownames(mut_exp)
+mut_exp[,1:39]<-apply(mut_exp[,1:39],2,as.numeric)
+#mut_exp<-as.data.frame(mut_exp)
+#rownames(mut_exp)<-rownames
+barplot(mut_exp$PAX8.x,  col = mut_exp$col, main= "PAX8")
