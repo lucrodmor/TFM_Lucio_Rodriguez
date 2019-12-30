@@ -6,22 +6,7 @@ suppressPackageStartupMessages(require('methylumi'))
 suppressPackageStartupMessages(require('TCGAMethylation450k'))
 suppressPackageStartupMessages(require('FDb.InfiniumMethylation.hg19'))
 #################################################################################
-######EJEMPLO##########
-library(MethylMix)
-data("METcancer")
-data("METnormal")
-data("GEcancer")
-METnormal[,1:4]
-head(METcancer)
-head(GEcancer)
-MethylMixResults<-MethylMix(METcancer, GEcancer, METnormal)
-MethylMixResults$MethylationDrivers
-plots<-MethylMix_PlotModel("MGMT", MethylMixResults, METcancer)
-plots$CorrelationPlot
-plots$MixtureModelPlot
-plots$MixtureModelPlot
-MethylMixResults$Classifications
-MethylMixResults$MethylationStates
+
 ############################################################################
 library(readr)
 meth_brca <- readLines('randomized_meth_brca.txt')
@@ -52,16 +37,17 @@ METnormal<-meth_BRCA[,idx2]
 load("C:/Users/Lucio/Desktop/Bioinformatica/TFM/Bases de datos/Breast_rna.RData")
 colnames(Breast_rna)<-gsub(colnames(Breast_rna), pattern = ".", replacement = "-", fixed = TRUE)
 colnames(MetCancer)<-substr(colnames(MetCancer),1,12)
-idx2<-match(colnames(METcancer[,2:196]),colnames(Breast_rna))
+METcancer<-MetCancer
+idx2<-match(colnames(METcancer[,1:195]),colnames(Breast_rna))
 Breast_rna<-Breast_rna[,idx2]
 #########################################################################
 Samples<-colnames(meth_BRCA[,5:225])
 Samples<-substr(Samples,1,12)
 idx<-colnames(Breast_rna)
 idx2<-match(Samples, idx)
-Breast_rna<-Breast_rna[,idx2]
+#Breast_rna<-Breast_rna[,idx2]
 GEcancer<-Breast_rna
-METcancer<-METCancer
+#METcancer<-METCancer
 ###########################################
 #Nombre de filas por simbolo del gen
 METcancer<-cbind(meth_BRCA[,1:4],METcancer)
@@ -69,15 +55,22 @@ METnormal<-cbind(meth_BRCA[,1:4],METnormal)
 idx<-METcancer$gene_symbol
 idx<-which(is.na(METcancer$gene_symbol))
 METcancer<-METcancer[-idx,]
-idx<-which(is.na(METnormal$gene_symbol))
+METnormal<-METnormal[-idx,]
 #####################################
-METcancer<-METcancer[,c(2,5:199)]
-METnormal<-as.data.frame(METnormal[,c(2,5:26)])
-GEcancer<-as.matrix(GEcancer)
-METnormal<-as.matrix(METnormal)
-METcancer<-as.matrix(METcancer)
+#METcancer<-METcancer[,c(2,5:199)]
+#METnormal<-as.data.frame(METnormal[,c(2,5:26)])
+#GEcancer<-as.matrix(GEcancer)
+#METnormal<-as.matrix(METnormal)
+##METcancer<-as.matrix(METcancer)
 ############################################################################
-METnormal[,1]
+#rownames<-METcancer
+METcancer<-as.data.frame(METcancer)
+METnormal<-as.data.frame(METnormal)
+idx<-which(duplicated(METcancer$gene_symbol))
+METcancer<-METcancer[-idx,]
+METnormal<-METnormal[-idx,]
+rownames(METcancer)<-METcancer$gene_symbol
+rownames(METnormal)<-METcancer$gene_symbol
 rownames(METnormal)<-sapply(strsplit(METnormal[,1], split = ';'), function(x) return(x[1]))
 rownames(METcancer)<-sapply(strsplit(METcancer[,1], split = ';'), function(x) return(x[1]))
 rownames<-rownames(GEcancer)
@@ -89,8 +82,8 @@ GEcancer<-as.data.frame(GEcancer)
 rownames(GEcancer)<-rownames
 GEcancer<-GEcancer[idx,]
 GEcancer<-as.matrix(GEcancer)
-METcancer<-METcancer[,2:195]
-METnormal<-METnormal[,2:23]
+METcancer<-METcancer[,5:199]
+METnormal<-METnormal[,5:30]
 METnormal<-as.matrix(METnormal)
 METcancer<-as.matrix(METcancer)
 rownames(GEcancer)<-gsub(rownames(GEcancer), pattern = "|", replacement = ";", fixed = TRUE)
@@ -108,14 +101,14 @@ rownames(METnormal)<-genes
 genes<-rownames(METcancer)
 METnormal<-apply(METcancer,2,as.numeric)
 rownames(METcancer)<-genes
-
+rownames(METnormal)<-genes
 
 METnormal<-as.matrix(METnormal)
 METcancer<-as.data.frame(METcancer)
 METcancer<-as.matrix(METcancer)
-colnames(METnormal)<-substr(colnames(METnormal),1,12)
+#colnames(METnormal)<-substr(colnames(METnormal),1,12)
 levels(METnormal)
-idx<-which(is.na(METnormal))
+#idx<-which(is.na(METnormal))
 
 row.has.na <- apply(METcancer, 1, function(x){any(is.na(x))})
 sum(row.has.na)
@@ -131,52 +124,57 @@ GEcancer<-GEcancer[idx,]
 ####################
 ######EJEMPLO##########
 library(MethylMix)
-saveRDS(METnormal, file = "METnormal.rds")
-saveRDS(METcancer,file = "METcancer.rds")
-saveRDS(GEcancer, file = "GEcancer.rds")
-METcancer<-as.matrix(METcancer)
-METnormal<-METnormal[1:5,]
-GEcancer<-GEcancer[1:5,]
-METnormal[,1:4]
-head(METcancer)
-head(GEcancer)
-match(colnames(METcancer), colnames(GEcancer))
+saveRDS(METnormal, file = "METnormal_BRCA.rds")
+saveRDS(METcancer,file = "METcancer_BRCA.rds")
+saveRDS(GEcancer, file = "GEcancer_BRCA.rds")
+#METcancer<-as.matrix(METcancer)
+#METnormal<-METnormal[1:5,]
+#GEcancer<-GEcancer[1:5,]
+#METnormal[,1:4]
+#head(METcancer)
+#head(GEcancer)
+#match(colnames(METcancer), colnames(GEcancer))
 METcancer<-apply(METcancer,2, as.numeric)
 class(METcancer)
 
-MethylMixResults<-MethylMix(METcancer[1:997,], GEcancer[1:997,], METnormal[1:997,], filter = TRUE, NoNormalMode = FALSE, listOfGenes = rownames(METcancer), OutputRoot = "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2")
+MethylMixResults<-MethylMix(METcancer, GEcancer, METnormal, filter = TRUE, listOfGenes = rownames(METcancer), OutputRoot = "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2")
 
 Drivers<-MethylMixResults$MethylationDrivers
 Drivers
-plots<-MethylMix_PlotModel("PAX8", MethylMixResults, METcancer)
+plots<-MethylMix_PlotModel("ZNF667", MethylMixResults, METcancer, GEcancer)
 plots$CorrelationPlot
 plots$MixtureModelPlot
 plots$MixtureModelPlot
 MethylMixResults$Classifications
 MethylMixResults$MethylationStates
 # Plot MGMT also with its normal methylation variation
-plots <- MethylMix_PlotModel("PAX8", MethylMixResults, METcancer, METnormal = METnormal)
+plots <- MethylMix_PlotModel("ZNF274", MethylMixResults, METcancer, METnormal = METnormal, GEcancer)
+plots$CorrelationPlot
 plots$MixtureModelPlot
 # Also plot the inverse correlation with gene expression (creates two
 # separate plots)
-plots <- MethylMix_PlotModel("TAP1", MethylMixResults, METcancer, GEcancer, 
+par(mfrow=c(2,2))
+plots <- MethylMix_PlotModel("NUDT12", MethylMixResults, METcancer, GEcancer, 
                              METnormal)
 plots$MixtureModelPlot
 plots$CorrelationPlot
 # Plot all functional and differential genes
 gene<-Drivers
-for (gene in MethylMixResults$MethylationDrivers) {
-  MethylMix_PlotModel(gene, MethylMixResults, METcancer, METnormal = METnormal)
+for (i in gene) {
+ plots<-MethylMix_PlotModel(i, MethylMixResults, METcancer, METnormal = METnormal)
+ plots$MixtureModelPlot 
 }
-
+plots$MixtureModelPlot
+gene
 ############################################################################
-write.xlsx2(Drivers, file = "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2/Drivers_breast.xlsx")
+write.xlsx2(Drivers, file = "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2/Drivers_Breast.xlsx")
 library(xlsx)      
 ############################################################################
 library(ConsensusClusterPlus)
 MethylMixResults<- MethylMix(METcancer, GEcancer, METnormal)
 
 ComplexHeatmap::Heatmap(Metilation)
+
 Metilation<-cbind(as.data.frame(METcancer), as.data.frame(METnormal))
 
 Samplestype<-c(1:216)
@@ -186,7 +184,12 @@ library(gplots)
 DMvalues<- MethylMixResults$MethylationStates
 cons_cluster<- ConsensusClusterPlus(d=DMvalues, maxK=10, reps=1000, pItem=0.8, distance='euclidean', clusterAlg="km")
 heatmap.2(as.matrix(METcancer),scale='row',col=bluered(149),trace='none',
-          main = "DM Values Centered CpG sites",margins = c(9, 22),density.inf="none",symkey=TRUE)
+          main = "  Beta Values",margins = c(9, 22),density.inf="none",symkey=TRUE)
+heatmap.2(as.matrix(DMvalues),scale='row',col=bluered(149),trace='none',
+          main = "  DM Values",margins = c(9, 22),density.inf="none",symkey=TRUE)
+par(mfrow=c(1,2))
+heatmap.2(as.matrix(Metilation),scale='row',col=bluered(149),trace='none',
+          main = "  Beta Values",margins = c(9, 22),density.inf="none",symkey=TRUE)
 BiocManager::install("pvcluster")
 
 pvclust(as.matrix(Metilation), method.hclust="average",
@@ -196,14 +199,20 @@ pvclust(as.matrix(Metilation), method.hclust="average",
 
 library(pvclust)
 Boxplot<-as.data.frame(t(DMvalues))
-boxplot(Boxplot, las =2, col = rainbow(39), main = "Predictive Genes DM Values")
+boxplot(Boxplot[,1:40], las =2, col = rainbow(39), main = "Predictive Genes DM Values", cex.names=0.2)
 
 
 idx1<-match( Drivers, rownames(Metilation))
 Metilation<-Metilation[idx1,]
 BetaValues<-Metilation
-boxplot(t(BetaValues), las = 2, col = rainbow(39), main = "Predictive Genes Beta Values")
+BetaValues<-as.data.frame(t(BetaValues))
+boxplot(BetaValues[,1:40], las = 2, col = rainbow(40), main = "Predictive Genes Beta Values")
 
+par(mfrow=c(3,3))
+genes<-Drivers
+for (i in genes){
+boxplot(METcancer[i,], METnormal[i,], names = c("Tumor", "Normal"), col = rainbow(2), main = i)
+}
 
 #############################################################################################
 #Análisis expresión ARN y CNVmut
@@ -233,15 +242,24 @@ mut_exp<-merge(GEcancer, cna, by = "row.names")
 rownames(mut_exp)<-mut_exp$Row.names
 mut_exp<-mut_exp[,-1]
 library(ggplot2)
-mut_exp<-as.data.frame(t(mut_exp))
+#mut_exp<-as.data.frame(t(mut_exp))
 
 ########################################
-mut_exp<-mut_exp[order(as.matrix(mut_exp$PAX8.x), decreasing = TRUE),]
-col<-which(mut_exp$PAX8.y=="Ampl")
+for (i in genes) {
+  
+}
+mut_exp<-mut_exp[order(as.matrix(mut_exp$ZNF667.x), decreasing = TRUE),]
+col<-which(mut_exp$ZNF667.y=="Ampl")
 mut_exp$col<-"blue"
 mut_exp$col[c(col)]<-"red"
 rownames<-rownames(mut_exp)
 mut_exp[,1:39]<-apply(mut_exp[,1:39],2,as.numeric)
 #mut_exp<-as.data.frame(mut_exp)
 #rownames(mut_exp)<-rownames
-barplot(mut_exp$PAX8.x,  col = mut_exp$col, main= "PAX8")
+barplot(mut_exp$ZNF667.x,  col = mut_exp$col, main= "ZNF667")
+
+mut_exp[,1:39]<-log(mut_exp[,1:39])
+boxplot(mut_exp$TAP1.x, mut_exp$AKT1.y, col = rainbow(2))
+###########################################################
+
+

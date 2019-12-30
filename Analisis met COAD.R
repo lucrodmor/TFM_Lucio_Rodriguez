@@ -225,7 +225,7 @@ library(ggplot2)
 #mut_exp<-as.data.frame(t(mut_exp))
 
 ########################################
-
+par(mfrow=c(1,2))
 mut_exp<-mut_exp[order(as.matrix(mut_exp$TNS4.x), decreasing = TRUE),]
 genes
 

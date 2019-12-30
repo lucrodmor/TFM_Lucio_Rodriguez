@@ -193,6 +193,7 @@ pvclust(as.matrix(Metilation), method.hclust="average",
 
 library(pvclust)
 Boxplot<-as.data.frame(t(DMvalues))
+par(mfrow=c(1,1))
 boxplot(Boxplot, las =2, col = rainbow(39), main = "Predictive Genes DM Values")
 
 
@@ -200,6 +201,9 @@ idx1<-match( Drivers, rownames(Metilation))
 Metilation<-Metilation[idx1,]
 BetaValues<-Metilation
 boxplot(t(BetaValues), las = 2, col = rainbow(39), main = "Predictive Genes Beta Values")
+
+METcancer_PRAD<-as.data.frame(t(METcancer_PRAD))
+METnormal_PRAD<-as.data.frame(t(METnormal_PRAD))
 
 
 #############################################################################################
@@ -404,3 +408,15 @@ mut_exp[,1:127]<-apply(mut_exp[,1:127],2,as.numeric)
 #mut_exp<-as.data.frame(mut_exp)
 #rownames(mut_exp)<-rownames
 barplot(mut_exp$MPP6.x,  col = mut_exp$col, main= "MPP6")
+
+
+
+#########################################################################
+#Comparamos muestras de tejido tumoral vs Normal
+
+genes<-Drivers
+par(mfrow=c(3,3))
+for (i in genes)
+{
+  boxplot(METcancer[i,],METnormal[i,], las = 2, col = rainbow(2), main = i, names = c("tumor", "normal"))
+}

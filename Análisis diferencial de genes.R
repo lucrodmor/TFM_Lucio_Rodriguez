@@ -373,3 +373,20 @@ write.xlsx(cam.upvslow_1, "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2/gsea_b
 write.xlsx(cam.upvslow_2, "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2/gsea_brca_curator_methylatongenes.xlsx")
 write.xlsx(cam.upvslow_3, "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2/gsea_brca_inmunogenic_methylationgenes.xlsx")
 ################################################################################################################################
+idx<-match(Drivers,rownames(v))
+v<-v[idx,]
+nrow(v)
+ann <- AnnotationDbi::select(org.Hs.eg.db,keys=rownames(v),columns=c("ENTREZID","SYMBOL","GENENAME"), keytype = "SYMBOL")
+idx1 <- ids2indices(Hs.c2,id=ann$ENTREZID)
+idx2 <- ids2indices(Hs.c6,id=ann$ENTREZID)
+idx3 <- ids2indices(Hs.c7,id=ann$ENTREZID)
+cam.upvslow_1<- camera(v,idx1,design,contrast=cont.matrix)
+cam.upvslow_2 <- camera(v,idx2,design,contrast=cont.matrix)
+cam.upvslow_3 <- camera(v,idx3,design,contrast=cont.matrix)
+head(cam.upvslow_1,10)
+head(cam.upvslow_2,10)
+head(cam.upvslow_3,10)
+write.xlsx(cam.upvslow_1, "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2/gsea_brca_oncogenic_methylationgenes.xlsx")
+write.xlsx(cam.upvslow_2, "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2/gsea_brca_curator_methylatongenes.xlsx")
+write.xlsx(cam.upvslow_3, "C:/Users/Lucio/Desktop/Bioinformatica/TFM/PEC2/gsea_brca_inmunogenic_methylationgenes.xlsx")
+######################
