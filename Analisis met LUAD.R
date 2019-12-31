@@ -149,16 +149,19 @@ plots$MixtureModelPlot
 MethylMixResults$Classifications
 MethylMixResults$MethylationStates
 # Plot MGMT also with its normal methylation variation
-plots <- MethylMix_PlotModel("ZNF71", MethylMixResults, METcancer, METnormal = METnormal)
+par(fmrow=c(1,2))
+#plots <- MethylMix_PlotModel("MAFK", MethylMixResults, METcancer, METnormal = METnormal)
+#plots$MixtureModelPlot
+plots <- MethylMix_PlotModel("MAFK", MethylMixResults, METcancer, METnormal = METnormal, GEcancer = GEcancer)
 plots$MixtureModelPlot
-plots <- MethylMix_PlotModel("MAFK", MethylMixResults, METcancer, METnormal = METnormal)
-plots$MixtureModelPlot
+plots$CorrelationPlot
 # Also plot the inverse correlation with gene expression (creates two
 # separate plots)
 plots <- MethylMix_PlotModel("HOXD1", MethylMixResults, METcancer, GEcancer, 
                              METnormal)
 plots$MixtureModelPlot
 plots$CorrelationPlot
+
 # Plot all functional and differential genes
 gene<-Drivers
 for (gene in MethylMixResults$MethylationDrivers) {

@@ -134,15 +134,50 @@ MethylMixResults<-MethylMix(METcancer, GEcancer, METnormal, filter = TRUE, NoNor
 
 Drivers<-MethylMixResults$MethylationDrivers
 Drivers
-plots<-MethylMix_PlotModel("ZNF71", MethylMixResults, METcancer, METnormal = METnormal, GEcancer = GEcancer)
+plots<-MethylMix_PlotModel("ZNF71", MethylMixResults, METcancer, METnormal = METnormal)
 plots$CorrelationPlot
 plots$MixtureModelPlot
 plots$MixtureModelPlot
 MethylMixResults$Classifications
 MethylMixResults$MethylationStates
 # Plot MGMT also with its normal methylation variation
-plots <- MethylMix_PlotModel("ZNF71", MethylMixResults, METcancer, METnormal = METnormal)
+plots <- MethylMix_PlotModel("MPZ", MethylMixResults, METcancer, METnormal = METnormal)
 plots$MixtureModelPlot
+
+# Plot MGMT also with its normal methylation variation
+plots <- MethylMix_PlotModel("THRB", MethylMixResults, METcancer, METnormal = METnormal)
+plots$MixtureModelPlot
+
+# Plot MGMT also with its normal methylation variation
+plots <- MethylMix_PlotModel("GSTM1", MethylMixResults, METcancer, METnormal = METnormal)
+plots$MixtureModelPlot
+
+# Plot MGMT also with its normal methylation variation
+plots <- MethylMix_PlotModel("CPNE8", MethylMixResults, METcancer, METnormal = METnormal)
+plots$MixtureModelPlot
+
+# Plot MGMT also with its normal methylation variation
+plots <- MethylMix_PlotModel("LOC389493", MethylMixResults, METcancer, METnormal = METnormal)
+plots$MixtureModelPlot
+
+
+# Plot MGMT also with its normal methylation variation
+plots <- MethylMix_PlotModel("VIPR2", MethylMixResults, METcancer, METnormal = METnormal)
+plots$MixtureModelPlot
+
+# Plot MGMT also with its normal methylation variation
+plots <- MethylMix_PlotModel("CHPF", MethylMixResults, METcancer, METnormal = METnormal)
+plots$MixtureModelPlot
+
+# Plot MGMT also with its normal methylation variation
+plots <- MethylMix_PlotModel("NKD2", MethylMixResults, METcancer, METnormal = METnormal)
+plots$MixtureModelPlot
+
+# Plot MGMT also with its normal methylation variation
+plots <- MethylMix_PlotModel("FAM150A", MethylMixResults, METcancer, METnormal = METnormal)
+plots$MixtureModelPlot
+
+
 # Also plot the inverse correlation with gene expression (creates two
 # separate plots)
 plots <- MethylMix_PlotModel("TSPYL3", MethylMixResults, METcancer, GEcancer, 
@@ -226,18 +261,21 @@ library(ggplot2)
 
 ########################################
 par(mfrow=c(1,2))
-mut_exp<-mut_exp[order(as.matrix(mut_exp$TNS4.x), decreasing = TRUE),]
+mut_exp<-mut_exp[order(as.matrix(mut_exp$THRB.x), decreasing = TRUE),]
 genes
 
-col<-which(mut_exp$TNS4.y=="Ampl")
+col<-which(mut_exp$THRB.y=="Ampl")
 mut_exp$col<-"blue"
 mut_exp$col[c(col)]<-"red"
 rownames<-rownames(mut_exp)
 mut_exp[,1:73]<-apply(mut_exp[,1:73],2,as.numeric)
 #mut_exp<-as.data.frame(mut_exp)
 #rownames(mut_exp)<-rownames
-barplot(mut_exp$TNS4.x,  col = mut_exp$col, main= "TNS4")
+barplot(mut_exp$THRB.x,  col = mut_exp$col, main= "THRB")
 
+levels(mut_exp$FAM83C.y)
+boxplot(log2(mut_exp$CYB561.x),mut_exp$CYB561.y, col = rainbow(2), names = c("Ampl","Noampl"), main = "FAM83")
+wilcox.test(mut_exp$CYB561.x, as.numeric(mut_exp$CYB561.y))
 #mut_exp[,1:73]<-log(mut_exp[,1:73])
 #boxplot(mut_exp$TAP1.x, mut_exp$AKT1.y, col = rainbow(2))
 ###########################################################
